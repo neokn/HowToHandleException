@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Star8g.Attributes;
 using Star8g.Exceptions;
 using Star8g.Services;
 
@@ -6,6 +7,7 @@ namespace Star8g.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
+    [StarCardExceptionFilter]
     public class StarCardController : ControllerBase
     {
         private readonly StarCardService _starCardService;
@@ -28,24 +30,13 @@ namespace Star8g.Controllers
         [HttpPost]
         public dynamic Pay([FromForm] int total)
         {
-            try
-            {
-                var remainingBalance = _starCardService.DeductMoney(total);
+            var remainingBalance = _starCardService.DeductMoney(total);
 
-                return new
-                {
-                    Status = true,
-                    Balance = remainingBalance
-                };
-            }
-            catch (BalanceNotEnoughException ex)
+            return new
             {
-                return new
-                {
-                    Status = false,
-                    Balance = ex.RemainingBalance
-                };
-            }
+                Status = true,
+                Balance = remainingBalance
+            };
         }
     }
 }
