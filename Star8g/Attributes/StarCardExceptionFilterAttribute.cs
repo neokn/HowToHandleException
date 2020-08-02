@@ -8,12 +8,13 @@ namespace Star8g.Attributes
     {
         public override void OnException(ExceptionContext context)
         {
-            if (context.Exception is BalanceNotEnoughException balanceNotEnough)
+            if (context.Exception is DepositException depositException)
             {
                 context.Result = new JsonResult(new
                 {
                     Status = false,
-                    Balance = balanceNotEnough.RemainingBalance
+                    Balance = depositException.RemainingBalance,
+                    Reason = depositException.Message
                 });
             }
         }
