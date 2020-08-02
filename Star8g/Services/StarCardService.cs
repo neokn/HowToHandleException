@@ -10,7 +10,19 @@ namespace Star8g.Services
 
         public int Balance => _balance;
         
-        public int DeductMoney(int total)
+        public int DeductMoneyWithAutoDeposit(int total)
+        {
+            if (total > _balance)
+            {
+                var difference = total - _balance;
+                var depositTotal = CalculateDepositTotal(difference);
+                Deposit(depositTotal);
+            }
+            
+            return DeductMoney(total);
+        }
+
+        private int DeductMoney(int total)
         {
             if (total > _balance)
             {
@@ -20,8 +32,8 @@ namespace Star8g.Services
             _balance -= total;
             return _balance;
         }
-        
-        public void Deposit(int total)
+
+        private void Deposit(int total)
         {
             try
             {
@@ -42,6 +54,11 @@ namespace Star8g.Services
                 throw new HttpRequestException();
             }
             // credit card api deduct {total} success
+        }
+        
+        private static int CalculateDepositTotal(int difference)
+        {
+            return (int)Math.Ceiling(difference / 500.0) * 500;
         }
     }
 }
